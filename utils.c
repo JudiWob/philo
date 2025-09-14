@@ -48,6 +48,7 @@ t_rules *init_rules(int argc, const char *argv[])
 		free(rules);
 		clean_exitf("Error: invalid arguments\n", NULL);
 	}
+	rules->start_time = get_time_ms(); // Will be set when simulation starts
 	return (rules);
 }
 
@@ -107,7 +108,7 @@ void init_forks_threads_mutex(t_rules *rules)
 	{
 		pthread_mutex_init(&(rules->forks)[i], NULL);
 	}
-	pthread_mutex_init(&rules->print, NULL);
+	pthread_mutex_init(&rules->print_mutex, NULL);
 	rules->threads = malloc(sizeof(pthread_t) * rules->num_philos);
 	if (!rules->threads)
     {
@@ -117,7 +118,6 @@ void init_forks_threads_mutex(t_rules *rules)
         free(rules);
         clean_exitf("Error: Memory allocation failed for threads\n", NULL);
     }
-
 }
 
 

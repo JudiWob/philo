@@ -8,7 +8,7 @@ OBJS = $(addprefix obj/, $(SRCS:.c=.o))
 DEPS = header.h
 
 # Output
-NAME = philosophers
+NAME = philos
 
 # Default rule
 all: $(NAME)
