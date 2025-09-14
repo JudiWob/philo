@@ -6,27 +6,28 @@ int main(int argc, char const *argv[])
 
     philos = init_philos(argc, argv);
 
-    for (int i = 0; i < philos->rules->num_philos; i++)
-    {
-        pthread_create(
-            &philos->rules->threads[i], // store thread ID
-            NULL,                       // default attributes
-            philos_routine,             // function each philosopher runs
-            &philos[i]                  // pass philosopher struct as argument
-        );
-    }
+    (void)(philos);
+    // for (int i = 0; i < philos->rules->num_philos; i++)
+    // {
+    //     pthread_create(
+    //         &philos->rules->threads[i], // store thread ID
+    //         NULL,                       // default attributes
+    //         philos_routine,             // function each philosopher runs
+    //         &philos[i]                  // pass philosopher struct as argument
+    //     );
+    // }
 
-    // Wait for all threads to finish
-    for (int i = 0; i < philos->rules->num_philos; i++)
-        pthread_join(philos->rules->threads[i], NULL);
+    // // Wait for all threads to finish
+    // for (int i = 0; i < philos->rules->num_philos; i++)
+    //     pthread_join(philos->rules->threads[i], NULL);
 
-    // Cleanup
-    for (int i = 0; i < philos->rules->num_philos; i++)
-        pthread_mutex_destroy(&philos->rules->forks[i]);
+    // // Cleanup
+    // for (int i = 0; i < philos->rules->num_philos; i++)
+    //     pthread_mutex_destroy(&philos->rules->forks[i]);
     return 0;
 }
 
-void philos_routine()
-{
+// void philos_routine()
+// {
 
-}
+// }

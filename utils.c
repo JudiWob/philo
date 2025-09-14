@@ -30,7 +30,7 @@ t_rules *init_rules(int argc, const char *argv[])
     t_rules *rules;
 
     if (argc < 5 || argc > 6)
-		clean_exitf(printf("Error: invalid number of arguments\n"), NULL);
+		clean_exitf("Error: invalid number of arguments\n", NULL);
 	rules = malloc(sizeof(t_rules));
 	if (!rules)
 		clean_exitf("Error: Memory allocation failed for rules\n", NULL);
@@ -46,7 +46,7 @@ t_rules *init_rules(int argc, const char *argv[])
         || rules->time_to_eat <= 0 || rules->time_to_sleep <= 0)
 	{
 		free(rules);
-		clean_exitf(printf("Error: invalid arguments\n"), NULL);
+		clean_exitf("Error: invalid arguments\n", NULL);
 	}
 	return (rules);
 }
@@ -75,7 +75,7 @@ t_philo *init_philos(int argc, const char *argv[]) //It doesn’t start the simu
 	int				i;
 
 	rules = init_rules(argc, argv);
-	init_forks(rules->num_philos, rules);
+	init_forks_threads_mutex(rules);
 
 	philos = malloc(sizeof(t_philo) * rules->num_philos);
 	if (!philos)
@@ -93,7 +93,7 @@ t_philo *init_philos(int argc, const char *argv[]) //It doesn’t start the simu
 	return (philos);
 }
 
-void init_forks_threads_mutex(int num_philosophers, t_rules *rules)
+void init_forks_threads_mutex(t_rules *rules)
 {
 	int				i;
 

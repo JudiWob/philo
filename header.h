@@ -33,8 +33,9 @@ typedef struct s_philo
 
 
 int     ft_atoi(const char *nptr);
+void    clean_exitf(char *message, t_philo *philos);
 t_rules *init_rules(int argc, const char *argv[]);
-void init_forks_threads_mutex(int num_philosophers, t_rules *rules);
+void init_forks_threads_mutex(t_rules *rules);
 t_philo *init_philos(int argc, const char *argv[]);
 
 #endif
