@@ -14,4 +14,15 @@ void    print_philos(t_philo *philos)
     printf("  rules ptr:   %p\n", (void*)philos[i].rules);
     printf("-----------------------------\n");
     }
+
+    t_rules *rules = philos->rules;
+    printf("=== Simulation Rules ===\n");
+    printf("Number of philosophers: %d\n", rules->num_philos);
+    printf("Time to die: %d ms\n", rules->time_to_die);
+    printf("Time to eat: %d ms\n", rules->time_to_eat);
+    printf("Time to sleep: %d ms\n", rules->time_to_sleep);
+    printf("Number of meals required: %d\n", rules->num_must_eat);
+    printf("Simulation is_dead flag: %d\n", rules->is_dead);
+    printf("Who died (index): %d\n", rules->who_died);
+    printf("Start time: %ld\n", rules->start_time);
 }

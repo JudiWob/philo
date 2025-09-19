@@ -21,9 +21,9 @@ t_rules *init_rules(int argc, const char *argv[])
     rules->time_to_sleep = ft_atoi(argv[4]);
 	rules->is_dead = 0;
     if (argc == 6)
-	rules->num_must_eat = ft_atoi(argv[5]);
+		rules->num_must_eat = ft_atoi(argv[5]);
     else
-	rules->num_must_eat = -1; // Optional parameter not provided
+		rules->num_must_eat = -1; // Optional parameter not provided
 	if (rules->num_philos <= 0 || rules->time_to_die <= 0
         || rules->time_to_eat <= 0 || rules->time_to_sleep <= 0)
 	{
@@ -43,14 +43,14 @@ t_philo *init_philos(int argc, const char *argv[]) //It doesn’t start the simu
 	
 	rules = init_rules(argc, argv);
 	init_forks_threads_mutex(rules);
-	
+	  
 	philos = malloc(sizeof(t_philo) * rules->num_philos);
 	if (!philos)
 	clean_exitf("Error: Memory allocation failed for philosophers\n", NULL);
 	
 	for (i = 0; i < rules->num_philos; i++)
 	{
-		philos[i].id = i + 1;
+		philos[i].id = i;
 		philos[i].meals_eaten = 0;
 		philos[i].last_meal = get_time_ms(); // Initialize with appropriate timestamp
 		philos[i].left_fork = &rules->forks[i]; //address of the fork/mutex to the left
