@@ -15,7 +15,6 @@ typedef struct s_rules
     int time_to_sleep;
     int num_must_eat; // optional (set -1 if not provided)
     int is_dead;
-    int who_died;
     long start_time; // timestamp when simulation starts
     pthread_mutex_t *forks; // array of mutexes for forks
     pthread_mutex_t print_mutex; // mutex for printing to avoid jumbled output
@@ -48,6 +47,7 @@ t_philo *init_philos(int argc, const char *argv[]);
 void init_forks_threads_mutex(t_rules *rules);
 int	ft_atoi(const char *nptr);
 void clean_exitf(char *message, t_philo *philos);
+void cleanup(t_philo *philos);
 
 void    print_philos(t_philo *philos);
 

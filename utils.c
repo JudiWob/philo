@@ -89,11 +89,19 @@ void init_forks_threads_mutex(t_rules *rules)
 void clean_exitf(char *message, t_philo *philos)
 {
 	printf("%s", message);
+
+	int i;
+
+	i = 0;
 	if (philos)
 	{
 		if(philos->rules)
 		{
 			if(philos->rules->forks)
+			{
+				for (i = 0; i < philos->rules->num_philos; i++)
+				pthread_mutex_destroy(&philos->rules->forks[i]);
+			}
 			free(philos->rules->forks);
 			free(philos->rules);
 			

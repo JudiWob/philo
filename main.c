@@ -36,9 +36,22 @@ int main(int argc, char const *argv[])
         pthread_join(philos->rules->threads[i], NULL);
     pthread_join(monitor, NULL);
     // Cleanup
-    for (int i = 0; i < philos->rules->num_philos; i++)
-        pthread_mutex_destroy(&philos->rules->forks[i]);
+    cleanup(philos);
     return 0;
+}
+
+void cleanup(t_philo *philos)
+{
+    int i;
+    
+    for (i = 0; i < philos->rules->num_philos; i++)
+        pthread_mutex_destroy(&philos->rules->forks[i]);
+    pthread_mutex_destroy(&philos->rules->print_mutex);
+    pthread_mutex_destroy(&philos->rules->meal_info);
+    free(philos->rules->threads);
+    free(philos->rules->forks);
+    free(philos->rules);
+    free(philos);
 }
 
 void *philos_routine(void *arg)
@@ -77,16 +90,7 @@ void *monitor_routine(void *arg)
         {
             if(get_time_ms() - philos[i].last_meal > philos[i].rules->time_to_die)
             {
-                //*
-                // pthread_mutex_lock(&philos->rules->meal_info);
-                // long time_since_last_meal = get_time_ms() - philos[i].last_meal;
-                // pthread_mutex_lock(&philos->rules->print_mutex);
-                // printf("Philosopher %d: %ld ms since last meal\n", philos[i].id, time_since_last_meal);
-                // pthread_mutex_unlock(&philos->rules->print_mutex);
-                // pthread_mutex_unlock(&philos->rules->meal_info);
-                //*/
                 print_action(&philos[i], "died");
-                philos->rules->who_died = i;
                 philos->rules->is_dead = 1;
                 pthread_mutex_unlock(&philos->rules->meal_info);
                 return (NULL);
@@ -99,12 +103,10 @@ void *monitor_routine(void *arg)
             // philos->rules->is_dead = 1;
             // pthread_mutex_unlock(&philos->rules->meal_info);
             pthread_mutex_lock(&philos->rules->print_mutex);
-            printf("Philosopher HAVES EATEN!!\n");
+            printf("All Philosophers have eaten %i times!\n", philos->rules->num_must_eat);
             pthread_mutex_unlock(&philos->rules->print_mutex);
             return NULL; // stop monitor
         }
-
-        usleep(5000); //1ms
     }
     return NULL;
 }
@@ -148,8 +150,7 @@ void print_action(t_philo *philos, const char *action)//<timestamp_in_ms> <philo
     if(philos->rules->is_dead)
     {
         pthread_mutex_unlock(&philos->rules->meal_info);
-        //print_action(&philos[philos->rules->who_died], "died");
-        return; // exit cleanly
+        return;
     }
     pthread_mutex_unlock(&philos->rules->meal_info);
     timestamp = (get_time_ms() - philos->rules->start_time);
@@ -160,9 +161,11 @@ void print_action(t_philo *philos, const char *action)//<timestamp_in_ms> <philo
 
 void safe_usleep(long duration_ms, t_rules *rules)
 {
-    long slept = 0;
-    long interval = 1000; // 1ms
-
+    long slept;
+    long interval;
+    
+    interval = 1000; // 1ms
+    slept = 0;
     while (slept < duration_ms * 1000)
     {
         pthread_mutex_lock(&rules->meal_info);
