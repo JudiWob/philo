@@ -1,11 +1,11 @@
 #include "header.h"
 
-int main(int argc, char const *argv[]);
-void *philos_routine(void *arg);
-long get_time_ms();
-void print_action(t_philo *philos, const char *action);
-void *monitor_routine(void *arg);
-int all_meals_eaten(t_philo *philos);
+int     main(int argc, char const *argv[]);
+void    *philos_routine(void *arg);
+void    *monitor_routine(void *arg);
+void    action_eat(t_philo *philos);
+int     all_meals_eaten(t_philo *philos);
+
 
 //number_of_philosophers 
 //time_to_die 
@@ -20,7 +20,6 @@ int main(int argc, char const *argv[])
     pthread_t       monitor;
 
     philos = init_philos(argc, argv);
-    print_philos(philos);
     for (int i = 0; i < philos->rules->num_philos; i++)
     {
         pthread_create(
@@ -31,35 +30,20 @@ int main(int argc, char const *argv[])
         );
     }
     pthread_create(&monitor, NULL, monitor_routine, philos); // Monitor thread to check for death
-    // Wait for all threads to finish
-    for (int i = 0; i < philos->rules->num_philos; i++)
+    for (int i = 0; i < philos->rules->num_philos; i++)    // Wait for all threads to finish
         pthread_join(philos->rules->threads[i], NULL);
     pthread_join(monitor, NULL);
-    // Cleanup
     cleanup(philos);
     return 0;
 }
 
-void cleanup(t_philo *philos)
-{
-    int i;
-    
-    for (i = 0; i < philos->rules->num_philos; i++)
-        pthread_mutex_destroy(&philos->rules->forks[i]);
-    pthread_mutex_destroy(&philos->rules->print_mutex);
-    pthread_mutex_destroy(&philos->rules->meal_info);
-    free(philos->rules->threads);
-    free(philos->rules->forks);
-    free(philos->rules);
-    free(philos);
-}
+
 
 void *philos_routine(void *arg)
 {
     t_philo *philos;
 
     philos = (t_philo *)arg;
-
     while(1)
     {
         pthread_mutex_lock(&philos->rules->meal_info);
@@ -69,9 +53,9 @@ void *philos_routine(void *arg)
             return NULL;; // exit cleanly
         }
         pthread_mutex_unlock(&philos->rules->meal_info);
-        print_action(philos, "thinking");
+        action_print(philos, "thinking");
         action_eat(philos);
-        print_action(philos, "is sleeping");
+        action_print(philos, "is sleeping");
         safe_usleep(philos->rules->time_to_sleep, philos->rules); // Convert ms to us
     }
     return NULL;
@@ -90,25 +74,44 @@ void *monitor_routine(void *arg)
         {
             if(get_time_ms() - philos[i].last_meal > philos[i].rules->time_to_die)
             {
-                print_action(&philos[i], "died");
-                philos->rules->is_dead = 1;
                 pthread_mutex_unlock(&philos->rules->meal_info);
+                action_print(&philos[i], "died");
+                philos->rules->is_dead = 1;
                 return (NULL);
             }
         }
         pthread_mutex_unlock(&philos->rules->meal_info);
         if (all_meals_eaten(philos))
         {
-            // pthread_mutex_lock(&philos->rules->meal_info);
-            // philos->rules->is_dead = 1;
-            // pthread_mutex_unlock(&philos->rules->meal_info);
             pthread_mutex_lock(&philos->rules->print_mutex);
             printf("All Philosophers have eaten %i times!\n", philos->rules->num_must_eat);
             pthread_mutex_unlock(&philos->rules->print_mutex);
-            return NULL; // stop monitor
+            return (NULL); // stop monitor
         }
     }
     return NULL;
+}
+
+
+void action_eat(t_philo *philos)
+{
+    if (philos->rules->num_philos == 1)
+    {
+        pthread_mutex_lock(&philos->rules->forks[0]);
+        action_print(philos, "has taken a fork");
+        safe_usleep(philos->rules->time_to_die, philos->rules);
+        pthread_mutex_unlock(&philos->rules->forks[0]);
+        return;  // exit this philosopher thread cleanly
+    }
+    take_forks(philos);
+    action_print(philos, "is eating");
+    pthread_mutex_lock(&philos->rules->meal_info);
+    philos->last_meal = get_time_ms();
+    philos->meals_eaten += 1;
+    pthread_mutex_unlock(&philos->rules->meal_info);
+    safe_usleep(philos->rules->time_to_eat, philos->rules); // Eat
+    pthread_mutex_unlock(philos->left_fork);
+    pthread_mutex_unlock(philos->right_fork);
 }
 
 
@@ -133,47 +136,3 @@ int all_meals_eaten(t_philo *philos)
     return (1);
 }
 
-long get_time_ms()
-{
-    struct timeval  tv;
-
-    gettimeofday(&tv, NULL);
-    return (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
-}
-
-
-void print_action(t_philo *philos, const char *action)//<timestamp_in_ms> <philosopher_id> <message>
-{
-    long timestamp;
-
-    pthread_mutex_lock(&philos->rules->meal_info);
-    if(philos->rules->is_dead)
-    {
-        pthread_mutex_unlock(&philos->rules->meal_info);
-        return;
-    }
-    pthread_mutex_unlock(&philos->rules->meal_info);
-    timestamp = (get_time_ms() - philos->rules->start_time);
-    pthread_mutex_lock(&philos->rules->print_mutex);
-    printf("%ld Philosopher %d %s\n", timestamp, philos->id + 1, action);
-    pthread_mutex_unlock(&philos->rules->print_mutex);
-}
-
-void safe_usleep(long duration_ms, t_rules *rules)
-{
-    long slept;
-    long interval;
-    
-    interval = 1000; // 1ms
-    slept = 0;
-    while (slept < duration_ms * 1000)
-    {
-        pthread_mutex_lock(&rules->meal_info);
-        int dead = rules->is_dead;
-        pthread_mutex_unlock(&rules->meal_info);
-        if (dead)
-            break;
-        usleep(interval);
-        slept += interval;
-    }
-}

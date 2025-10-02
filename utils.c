@@ -1,20 +1,20 @@
 #include "header.h"
 
-t_rules *init_rules(int argc, const char *argv[]);
-t_philo *init_philos(int argc, const char *argv[]);
-void init_forks_threads_mutex(t_rules *rules);
-int	ft_atoi(const char *nptr);
-void clean_exitf(char *message, t_philo *philos);
+t_rules	*init_rules(int argc, const char *argv[]);
+t_philo	*init_philos(int argc, const char *argv[]);
+void 	init_forks_threads_mutex(t_rules *rules);
+int		ft_atoi(const char *nptr);
+void 	clean_exitf(char *message, t_rules *rules, t_philo *philos);
 
 t_rules *init_rules(int argc, const char *argv[])
 {
 	t_rules *rules;
 	
     if (argc < 5 || argc > 6)
-	clean_exitf("Error: invalid number of arguments\n", NULL);
+		clean_exitf("Invalid number of arguments\n", NULL, NULL);
 	rules = malloc(sizeof(t_rules));
 	if (!rules)
-	clean_exitf("Error: Memory allocation failed for rules\n", NULL);
+		clean_exitf("Memory allocation failed for rules\n", NULL, NULL);
     rules->num_philos = ft_atoi(argv[1]);
     rules->time_to_die = ft_atoi(argv[2]);
     rules->time_to_eat = ft_atoi(argv[3]);
@@ -26,10 +26,7 @@ t_rules *init_rules(int argc, const char *argv[])
 		rules->num_must_eat = -1; // Optional parameter not provided
 	if (rules->num_philos <= 0 || rules->time_to_die <= 0
         || rules->time_to_eat <= 0 || rules->time_to_sleep <= 0)
-	{
-		free(rules);
-		clean_exitf("Error: invalid arguments\n", NULL);
-	}
+		clean_exitf("Invalid arguments\n", rules, NULL);
 	rules->start_time = get_time_ms(); // Will be set when simulation starts
 	return (rules);
 }
@@ -43,11 +40,9 @@ t_philo *init_philos(int argc, const char *argv[]) //It doesn’t start the simu
 	
 	rules = init_rules(argc, argv);
 	init_forks_threads_mutex(rules);
-	  
 	philos = malloc(sizeof(t_philo) * rules->num_philos);
 	if (!philos)
-	clean_exitf("Error: Memory allocation failed for philosophers\n", NULL);
-	
+		clean_exitf("Memory allocation failed for philosophers\n", rules, NULL);
 	for (i = 0; i < rules->num_philos; i++)
 	{
 		philos[i].id = i;
@@ -66,46 +61,41 @@ void init_forks_threads_mutex(t_rules *rules)
 	
 	rules->forks = malloc(sizeof(pthread_mutex_t) * rules->num_philos); //one mutex for each fork.
 	if (!rules->forks)
-	{
-		free(rules);
-		clean_exitf("Error: Memory allocation failed for forks\n", NULL);
-	}
+		clean_exitf("Memory allocation failed for forks\n", rules, NULL);
 	for (i = 0; i < rules->num_philos; i++)
 	{
 		pthread_mutex_init(&(rules->forks)[i], NULL);
 	}
 	pthread_mutex_init(&rules->print_mutex, NULL);
+	pthread_mutex_init(&rules->meal_info, NULL);
 	rules->threads = malloc(sizeof(pthread_t) * rules->num_philos);
 	if (!rules->threads)
 	{
 		for (i = 0; i < rules->num_philos; i++)
-		pthread_mutex_destroy(&rules->forks[i]);
+			pthread_mutex_destroy(&rules->forks[i]);
 		free(rules->forks);
 		free(rules);
-		clean_exitf("Error: Memory allocation failed for threads\n", NULL);
+		clean_exitf("Memory allocation failed for threads\n", NULL, NULL);
 	}
 }
 
-void clean_exitf(char *message, t_philo *philos)
+
+void clean_exitf(char *message, t_rules *rules_x, t_philo *philos)
 {
-	printf("%s", message);
-
 	int i;
-
-	i = 0;
+	t_rules *rules;
+	
+	printf("Error: %s", message);
+	rules = rules_x;
+	if(rules)
+	{
+		if(rules->forks)
+			for (i = 0; i < rules->num_philos; i++);
+		free(rules->forks);
+		free(rules);
+	}
 	if (philos)
 	{
-		if(philos->rules)
-		{
-			if(philos->rules->forks)
-			{
-				for (i = 0; i < philos->rules->num_philos; i++)
-				pthread_mutex_destroy(&philos->rules->forks[i]);
-			}
-			free(philos->rules->forks);
-			free(philos->rules);
-			
-		}
 		free(philos);
 	}
 	exit(EXIT_FAILURE);

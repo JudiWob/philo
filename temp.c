@@ -1,5 +1,7 @@
 #include "header.h"
 
+// print_philos(philos);
+
 void    print_philos(t_philo *philos)
 {
     int n = philos->rules->num_philos;
