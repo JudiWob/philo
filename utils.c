@@ -11,10 +11,10 @@ t_rules *init_rules(int argc, const char *argv[])
 	t_rules *rules;
 	
     if (argc < 5 || argc > 6)
-		clean_exitf("Invalid number of arguments\n", NULL, NULL);
+		exit(EXIT_FAILURE);
 	rules = malloc(sizeof(t_rules));
 	if (!rules)
-		clean_exitf("Memory allocation failed for rules\n", NULL, NULL);
+		exit(EXIT_FAILURE);
     rules->num_philos = ft_atoi(argv[1]);
     rules->time_to_die = ft_atoi(argv[2]);
     rules->time_to_eat = ft_atoi(argv[3]);
@@ -42,7 +42,7 @@ t_philo *init_philos(int argc, const char *argv[]) //It doesn’t start the simu
 	init_forks_threads_mutex(rules);
 	philos = malloc(sizeof(t_philo) * rules->num_philos);
 	if (!philos)
-		clean_exitf("Memory allocation failed for philosophers\n", rules, NULL);
+		exit(EXIT_FAILURE);
 	for (i = 0; i < rules->num_philos; i++)
 	{
 		philos[i].id = i;
@@ -61,7 +61,7 @@ void init_forks_threads_mutex(t_rules *rules)
 	
 	rules->forks = malloc(sizeof(pthread_mutex_t) * rules->num_philos); //one mutex for each fork.
 	if (!rules->forks)
-		clean_exitf("Memory allocation failed for forks\n", rules, NULL);
+		exit(EXIT_FAILURE);
 	for (i = 0; i < rules->num_philos; i++)
 	{
 		pthread_mutex_init(&(rules->forks)[i], NULL);
@@ -70,13 +70,7 @@ void init_forks_threads_mutex(t_rules *rules)
 	pthread_mutex_init(&rules->meal_info, NULL);
 	rules->threads = malloc(sizeof(pthread_t) * rules->num_philos);
 	if (!rules->threads)
-	{
-		for (i = 0; i < rules->num_philos; i++)
-			pthread_mutex_destroy(&rules->forks[i]);
-		free(rules->forks);
-		free(rules);
-		clean_exitf("Memory allocation failed for threads\n", NULL, NULL);
-	}
+		exit(EXIT_FAILURE);
 }
 
 
