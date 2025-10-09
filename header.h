@@ -51,7 +51,7 @@ t_rules	*init_rules(int argc, const char *argv[]);
 t_philo	*init_philos(int argc, const char *argv[]);
 void 	init_forks_threads_mutex(t_rules *rules);
 int		ft_atoi(const char *nptr);
-void 	clean_exitf(char *message, t_rules *rules, t_philo *philos);
+void 	clean_exitf(char *message, t_rules *rules);
 
 
 

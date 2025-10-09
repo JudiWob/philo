@@ -4,7 +4,32 @@ t_rules	*init_rules(int argc, const char *argv[]);
 t_philo	*init_philos(int argc, const char *argv[]);
 void 	init_forks_threads_mutex(t_rules *rules);
 int		ft_atoi(const char *nptr);
-void 	clean_exitf(char *message, t_rules *rules, t_philo *philos);
+void 	clean_exitf(char *message, t_rules *rules);
+
+t_philo *init_philos(int argc, const char *argv[]) //It doesn’t start the simulation yet, so it doesn’t create threads.
+{
+	t_philo			*philos;
+	t_rules			*rules; 
+	int				i;
+
+	if (argc < 5)
+		clean_exitf("Invalid arguments\n", NULL);
+	rules = init_rules(argc, argv);
+	init_forks_threads_mutex(rules);
+	philos = malloc(sizeof(t_philo) * rules->num_philos);
+	if (!philos)
+		exit(EXIT_FAILURE);
+	for (i = 0; i < rules->num_philos; i++)
+	{
+		philos[i].id = i;
+		philos[i].meals_eaten = 0;
+		philos[i].last_meal = get_time_ms(); // Initialize with appropriate timestamp
+		philos[i].left_fork = &rules->forks[i]; //address of the fork/mutex to the left
+		philos[i].right_fork = &rules->forks[(i + 1) % rules->num_philos]; //address of the fork to the right //The modulo % wraps the index around when you reach the last philosopher.
+		philos[i].rules = rules;
+	}
+	return (philos);
+}
 
 t_rules *init_rules(int argc, const char *argv[])
 {
@@ -26,35 +51,11 @@ t_rules *init_rules(int argc, const char *argv[])
 		rules->num_must_eat = -1; // Optional parameter not provided
 	if (rules->num_philos <= 0 || rules->time_to_die <= 0
         || rules->time_to_eat <= 0 || rules->time_to_sleep <= 0)
-		clean_exitf("Invalid arguments\n", rules, NULL);
+		clean_exitf("Invalid arguments\n", rules);
 	rules->start_time = get_time_ms(); // Will be set when simulation starts
 	return (rules);
 }
-	
-	
-t_philo *init_philos(int argc, const char *argv[]) //It doesn’t start the simulation yet, so it doesn’t create threads.
-{
-	t_philo			*philos;
-	t_rules			*rules; 
-	int				i;
-	
-	rules = init_rules(argc, argv);
-	init_forks_threads_mutex(rules);
-	philos = malloc(sizeof(t_philo) * rules->num_philos);
-	if (!philos)
-		exit(EXIT_FAILURE);
-	for (i = 0; i < rules->num_philos; i++)
-	{
-		philos[i].id = i;
-		philos[i].meals_eaten = 0;
-		philos[i].last_meal = get_time_ms(); // Initialize with appropriate timestamp
-		philos[i].left_fork = &rules->forks[i]; //address of the fork/mutex to the left
-		philos[i].right_fork = &rules->forks[(i + 1) % rules->num_philos]; //address of the fork to the right //The modulo % wraps the index around when you reach the last philosopher.
-		philos[i].rules = rules;
-	}
-	return (philos);
-}
-	
+
 void init_forks_threads_mutex(t_rules *rules)
 {
 	int				i;
@@ -74,24 +75,11 @@ void init_forks_threads_mutex(t_rules *rules)
 }
 
 
-void clean_exitf(char *message, t_rules *rules_x, t_philo *philos)
+void clean_exitf(char *message, t_rules *rules)
 {
-	int i;
-	t_rules *rules;
-	
 	printf("Error: %s", message);
-	rules = rules_x;
 	if(rules)
-	{
-		if(rules->forks)
-			for (i = 0; i < rules->num_philos; i++);
-		free(rules->forks);
 		free(rules);
-	}
-	if (philos)
-	{
-		free(philos);
-	}
 	exit(EXIT_FAILURE);
 }
 
