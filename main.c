@@ -37,8 +37,6 @@ int main(int argc, char const *argv[])
     return 0;
 }
 
-
-
 void *philos_routine(void *arg)
 {
     t_philo *philos;
@@ -63,8 +61,8 @@ void *philos_routine(void *arg)
 
 void *monitor_routine(void *arg)
 {
-    t_philo *philos;
     int     i;
+    t_philo *philos;
 
     philos = (t_philo *)arg;
     while(1)
@@ -82,12 +80,7 @@ void *monitor_routine(void *arg)
         }
         pthread_mutex_unlock(&philos->rules->meal_info);
         if (all_meals_eaten(philos))
-        {
-            pthread_mutex_lock(&philos->rules->print_mutex);
-            printf("All Philosophers have eaten %i times!\n", philos->rules->num_must_eat);
-            pthread_mutex_unlock(&philos->rules->print_mutex);
             return (NULL); // stop monitor
-        }
     }
     return NULL;
 }
@@ -121,7 +114,6 @@ int all_meals_eaten(t_philo *philos)
 
     if(philos->rules->num_must_eat == -1)
         return 0;
-
     pthread_mutex_lock(&philos->rules->meal_info);
     for(i = 0; i < philos->rules->num_philos; i++)
     {
@@ -133,6 +125,9 @@ int all_meals_eaten(t_philo *philos)
     }
     philos->rules->is_dead = 1;
     pthread_mutex_unlock(&philos->rules->meal_info);
+    pthread_mutex_lock(&philos->rules->print_mutex);
+    printf("All Philosophers have eaten %i times!\n", philos->rules->num_must_eat);
+    pthread_mutex_unlock(&philos->rules->print_mutex);
     return (1);
 }
 
