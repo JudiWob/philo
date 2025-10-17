@@ -6,17 +6,44 @@ void    take_forks(t_philo *philos);
 void    action_print(t_philo *philos, const char *action);
 void    cleanup(t_philo *philos);
 
+void action_eat(t_philo *philos)
+{
+    
+    if (philos->rules->num_philos == 1)
+    {
+        pthread_mutex_lock(&philos->rules->forks[0]);
+        action_print(philos, "has taken a fork");
+        safe_usleep(philos->rules->time_to_die, philos->rules);
+        pthread_mutex_unlock(&philos->rules->forks[0]);
+        return;  // exit this philosopher thread cleanly
+    }
+    //action_print(philos, "waiting for forks");
+    take_forks(philos);
+    pthread_mutex_lock(&philos->rules->meal_info);
+    philos->last_meal = get_time_ms();
+    philos->meals_eaten += 1;
+    pthread_mutex_unlock(&philos->rules->meal_info);
+    action_print(philos, "is eating");
+    usleep(philos->rules->time_to_eat * 1000);
+    //safe_usleep(philos->rules->time_to_eat, philos->rules); // Eat
+    //action_print(philos, "has finished eating");
+    pthread_mutex_unlock(philos->left_fork);
+    pthread_mutex_unlock(philos->right_fork);
+    
+}
+
 void safe_usleep(long duration_ms, t_rules *rules)
 {
     long slept;
     long interval;
-    
+    int dead;
+
     interval = 1000; // 1ms
     slept = 0;
     while (slept < duration_ms * 1000)
     {
         pthread_mutex_lock(&rules->meal_info);
-        int dead = rules->is_dead;
+        dead = rules->is_dead;
         pthread_mutex_unlock(&rules->meal_info);
         if (dead)
             break;
@@ -55,13 +82,13 @@ void action_print(t_philo *philos, const char *action)//<timestamp_in_ms> <philo
 {
     long timestamp;
 
-    pthread_mutex_lock(&philos->rules->meal_info);
+    pthread_mutex_lock(&philos->rules->death);
     if(philos->rules->is_dead)
     {
-        pthread_mutex_unlock(&philos->rules->meal_info);
+        pthread_mutex_unlock(&philos->rules->death);
         return;
     }
-    pthread_mutex_unlock(&philos->rules->meal_info);
+    pthread_mutex_unlock(&philos->rules->death);
     timestamp = (get_time_ms() - philos->rules->start_time);
     pthread_mutex_lock(&philos->rules->print_mutex);
     printf("%ld Philosopher %d %s\n", timestamp, philos->id + 1, action);

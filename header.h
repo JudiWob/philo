@@ -18,6 +18,7 @@ typedef struct s_rules
     long start_time; // timestamp when simulation starts
     pthread_mutex_t *forks; // array of mutexes for forks
     pthread_mutex_t print_mutex; // mutex for printing to avoid jumbled output
+    pthread_mutex_t death;
     pthread_mutex_t meal_info;   // protects last_meal & meals_eaten
     pthread_t *threads;
 }   t_rules;

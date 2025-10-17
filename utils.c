@@ -69,6 +69,7 @@ void init_forks_threads_mutex(t_rules *rules)
 	}
 	pthread_mutex_init(&rules->print_mutex, NULL);
 	pthread_mutex_init(&rules->meal_info, NULL);
+	pthread_mutex_init(&rules->death, NULL);
 	rules->threads = malloc(sizeof(pthread_t) * rules->num_philos);
 	if (!rules->threads)
 		exit(EXIT_FAILURE);
