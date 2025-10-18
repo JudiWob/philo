@@ -19,7 +19,7 @@ typedef struct s_rules
     pthread_mutex_t *forks; // array of mutexes for forks
     pthread_mutex_t print_mutex; // mutex for printing to avoid jumbled output
     pthread_mutex_t death;
-    pthread_mutex_t meal_info;   // protects last_meal & meals_eaten
+    //pthread_mutex_t meal_info;   // protects last_meal & meals_eaten
     pthread_t *threads;
 }   t_rules;
 
@@ -31,6 +31,7 @@ typedef struct s_philo
     pthread_mutex_t *left_fork;
     pthread_mutex_t *right_fork;
     t_rules *rules; // pointer to global rules
+    pthread_mutex_t check_mutex;
 }   t_philo;
 
 //main
@@ -41,7 +42,7 @@ void    action_eat(t_philo *philos);
 int     all_meals_eaten(t_philo *philos);
 
 //utils 2
-void    safe_usleep(long duration_ms, t_rules *rules);
+void    safe_usleep(long duration_ms, t_philo *philos);
 long    get_time_ms();
 void    take_forks(t_philo *philos);
 void    action_print(t_philo *philos, const char *action);

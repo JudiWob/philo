@@ -26,6 +26,7 @@ t_philo *init_philos(int argc, const char *argv[]) //It doesn’t start the simu
 		philos[i].last_meal = get_time_ms(); // Initialize with appropriate timestamp
 		philos[i].left_fork = &rules->forks[i]; //address of the fork/mutex to the left
 		philos[i].right_fork = &rules->forks[(i + 1) % rules->num_philos]; //address of the fork to the right //The modulo % wraps the index around when you reach the last philosopher.
+		pthread_mutex_init(&philos[i].check_mutex, NULL);
 		philos[i].rules = rules;
 	}
 	return (philos);
@@ -68,7 +69,7 @@ void init_forks_threads_mutex(t_rules *rules)
 		pthread_mutex_init(&(rules->forks)[i], NULL);
 	}
 	pthread_mutex_init(&rules->print_mutex, NULL);
-	pthread_mutex_init(&rules->meal_info, NULL);
+	//pthread_mutex_init(&rules->meal_info, NULL);
 	pthread_mutex_init(&rules->death, NULL);
 	rules->threads = malloc(sizeof(pthread_t) * rules->num_philos);
 	if (!rules->threads)
