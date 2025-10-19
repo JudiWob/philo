@@ -14,12 +14,12 @@ typedef struct s_rules
     int time_to_eat;
     int time_to_sleep;
     int num_must_eat; // optional (set -1 if not provided)
-    int is_dead;
+    int done;
     long start_time; // timestamp when simulation starts
     pthread_mutex_t *forks; // array of mutexes for forks
     pthread_mutex_t print_mutex; // mutex for printing to avoid jumbled output
     pthread_mutex_t death;
-    //pthread_mutex_t meal_info;   // protects last_meal & meals_eaten
+    pthread_mutex_t general;
     pthread_t *threads;
 }   t_rules;
 
@@ -28,6 +28,7 @@ typedef struct s_philo
     int id;
     int meals_eaten;
     long last_meal;
+    int is_dead;
     pthread_mutex_t *left_fork;
     pthread_mutex_t *right_fork;
     t_rules *rules; // pointer to global rules
@@ -55,6 +56,7 @@ void 	init_forks_threads_mutex(t_rules *rules);
 int		ft_atoi(const char *nptr);
 void 	clean_exitf(char *message, t_rules *rules);
 
+int alive(t_philo *philos);
 
 
 void    print_philos(t_philo *philos);

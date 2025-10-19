@@ -24,6 +24,5 @@ void    print_philos(t_philo *philos)
     printf("Time to eat: %d ms\n", rules->time_to_eat);
     printf("Time to sleep: %d ms\n", rules->time_to_sleep);
     printf("Number of meals required: %d\n", rules->num_must_eat);
-    printf("Simulation is_dead flag: %d\n", rules->is_dead);
     printf("Start time: %ld\n", rules->start_time);
 }
