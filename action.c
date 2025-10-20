@@ -43,7 +43,9 @@ long get_time_ms()
 
 void take_forks(t_philo *philos)
 {
-    if (philos->id % 2 == 0) 
+    if (philos->id % 2 == 0)
+		usleep(1000); // 1ms
+	if (philos->id % 2 == 0) 
     {
         pthread_mutex_lock(philos->left_fork);
         action_print(philos, "has taken a fork");
@@ -64,13 +66,13 @@ void action_print(t_philo *philos, const char *action)//<timestamp_in_ms> <philo
 
     if(!alive(philos))
         return;
-    pthread_mutex_lock(&philos->rules->general);
-    if (philos->rules->done)
-    {
-        pthread_mutex_unlock(&philos->rules->general);
-        return; // all general
-    }
-    pthread_mutex_unlock(&philos->rules->general);
+    // pthread_mutex_lock(&philos->rules->general);
+    // if (philos->rules->done)
+    // {
+    //     pthread_mutex_unlock(&philos->rules->general);
+    //     return; // all general
+    // }
+    // pthread_mutex_unlock(&philos->rules->general);
     // pthread_mutex_lock(&philos->rules->print_mutex);
     // pthread_mutex_lock(&philos->check_mutex);
     // if (philos->is_dead || philos->rules->done)

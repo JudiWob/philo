@@ -53,6 +53,7 @@ void *monitor_routine(void *arg)
     t_philo *philos;
 
     philos = (t_philo *)arg;
+    ft_sleep(philos->rules->time_to_die - 20);
     while(1)
     {
         if (all_meals_eaten(philos))

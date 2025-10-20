@@ -57,6 +57,7 @@ int		ft_atoi(const char *nptr);
 void 	clean_exitf(char *message, t_rules *rules);
 
 int alive(t_philo *philos);
+void	ft_sleep(size_t sleep);
 
 
 void    print_philos(t_philo *philos);
