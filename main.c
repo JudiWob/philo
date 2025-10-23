@@ -13,38 +13,27 @@ int     all_meals_eaten(t_philo *philos);
 //time_to_sleep
 //[number_of_times_each_philosopher_must_eat]
 
-int main(int argc, char const *argv[])
+int	main(int argc, char const *argv[])
 {
-    t_philo         *philos;
-    pthread_t       monitor;
+	t_philo		*philos;
+	pthread_t	monitor;
+	int			i;
 
-    philos = init_philos(argc, argv);
-    if (philos->rules->num_philos == 1)
-    {
-        printf("0 Philosopher 1 died\n");
-        cleanup(philos);
-        return 0;  // exit this philosopher thread cleanly
-    }
-    for (int i = 0; i < philos->rules->num_philos; i++)
-    {
-        pthread_create(
-            &philos->rules->threads[i], // store thread ID
-            NULL,                       // default attributes
-            philos_routine,             // function each philosopher runs
-            &philos[i]                  // pass philosopher struct as argument
-        );
-    }
-    pthread_create(&monitor, NULL, monitor_routine, philos); // Monitor thread to check for death
-    for (int i = 0; i < philos->rules->num_philos; i++)    // Wait for all threads to finish
-        pthread_join(philos->rules->threads[i], NULL);
-    pthread_join(monitor, NULL);
-    // for (int i = 0; i < philos->rules->num_philos; i++)
-    // {
-    //     printf("They ate %i times\n", philos[i].meals_eaten);
-    // }
-    cleanup(philos);
-    return 0;
+	philos = init_philos(argc, argv);
+	if (philos->rules->num_philos == 1)
+		return (printf("0 1 died\n"), cleanup(philos));
+	i = -1;
+	while (++i < philos->rules->num_philos)
+		pthread_create(&philos->rules->threads[i], NULL, philos_routine,
+			&philos[i]);
+	pthread_create(&monitor, NULL, monitor_routine, philos);
+	i = -1;
+	while (++i < philos->rules->num_philos)
+		pthread_join(philos->rules->threads[i], NULL);
+	pthread_join(monitor, NULL);
+	return (cleanup(philos));
 }
+
 
 int alive(t_philo *philos)
 {
