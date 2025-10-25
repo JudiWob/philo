@@ -1,76 +1,91 @@
-#include   "header.h"
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   monitor.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/25 18:09:20 by jpaselt           #+#    #+#             */
+/*   Updated: 2025/10/25 18:11:00 by jpaselt          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
-void kill_all(t_philo *philos, int id)
+#include "header.h"
+
+void	kill_all(t_philo *philos, int id)
 {
-    int i;
-    long timestamp;
+	int		i;
+	long	timestamp;
 
-	
-    timestamp = (get_time_ms() - philos->rules->start_time);
-	for (i = 0; i < philos->rules->num_philos; i++)
+	timestamp = (get_time_ms() - philos->rules->start_time);
+	i = 0;
+	while (i < philos->rules->num_philos)
 	{
 		pthread_mutex_lock(&philos[i].check_mutex);
 		philos[i].is_dead = 1;
 		pthread_mutex_unlock(&philos[i].check_mutex);
+		i++;
 	}
-    if(id != -1)
-    {
-        printf("%ld Philosopher %d died\n", timestamp, id + 1);
-    }
+	if (id != -1)
+	{
+		printf("%ld Philosopher %d died\n", timestamp, id + 1);
+	}
 	pthread_mutex_unlock(&philos->rules->print_mutex);
 }
 
-
-int all_meals_eaten(t_philo *philos)
+int	all_meals_eaten(t_philo *philos)
 {
-    int i;
+	int	i;
 
-    if(philos->rules->num_must_eat == -1)
-        return 0;
-    for(i = 0; i < philos->rules->num_philos; i++)
-    {
-        pthread_mutex_lock(&philos[i].check_mutex);
-        if(philos[i].meals_eaten < philos->rules->num_must_eat)
-        {
-            pthread_mutex_unlock(&philos[i].check_mutex);
-            return (0);
-        }
-        pthread_mutex_unlock(&philos[i].check_mutex);
-    }
-    kill_all(philos, -1);
-	
-    return (1);
+	if (philos->rules->num_must_eat == -1)
+		return (0);
+	i = 0;
+	while (i < philos->rules->num_philos)
+	{
+		pthread_mutex_lock(&philos[i].check_mutex);
+		if (philos[i].meals_eaten < philos->rules->num_must_eat)
+		{
+			pthread_mutex_unlock(&philos[i].check_mutex);
+			return (0);
+		}
+		pthread_mutex_unlock(&philos[i].check_mutex);
+		i++;
+	}
+	kill_all(philos, -1);
+	return (1);
 }
 
-void *monitor_routine(void *arg)
+void	*monitor_routine(void *arg)
 {
-    int     i;
-    t_philo *philos;
+	int		i;
+	t_philo	*philos;
 
-    philos = (t_philo *)arg;
-    ft_sleep(philos->rules->time_to_die - 20);
-    while(1)
-    {
+	philos = (t_philo *)arg;
+	ft_sleep(philos->rules->time_to_die - 20);
+	while (1)
+	{
 		pthread_mutex_lock(&philos->rules->print_mutex);
-        if (all_meals_eaten(philos))
+		if (all_meals_eaten(philos))
 		{
-			printf("All Philosophers have eaten %i times!\n", philos->rules->num_must_eat);
-            pthread_mutex_unlock(&philos->rules->print_mutex);
+			printf("All Philosophers have eaten %i times!\n",
+				philos->rules->num_must_eat);
+			pthread_mutex_unlock(&philos->rules->print_mutex);
 			return (NULL);
 		}
-        for(i = 0; i < philos->rules->num_philos; i++)
-        {
+		for (i = 0; i < philos->rules->num_philos; i++)
+		{
 			pthread_mutex_lock(&philos[i].check_mutex);
-            if(get_time_ms() - philos[i].last_meal >= philos[i].rules->time_to_die)
-            {
+			if (get_time_ms()
+				- philos[i].last_meal >= philos[i].rules->time_to_die)
+			{
 				pthread_mutex_unlock(&philos[i].check_mutex);
-                kill_all(philos, i);
-                return (NULL);
-            }
-            pthread_mutex_unlock(&philos[i].check_mutex);
-        }
+				kill_all(philos, i);
+				return (NULL);
+			}
+			pthread_mutex_unlock(&philos[i].check_mutex);
+		}
 		pthread_mutex_unlock(&philos->rules->print_mutex);
-        usleep(400);
-    }
-    return NULL;
+		usleep(400);
+	}
+	return (NULL);
 }
