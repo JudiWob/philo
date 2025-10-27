@@ -1,23 +1,34 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   routine.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/27 16:58:26 by jpaselt           #+#    #+#             */
+/*   Updated: 2025/10/27 16:58:28 by jpaselt          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "header.h"
 
-
-void *philos_routine(void *arg)
+void	*philos_routine(void *arg)
 {
-    t_philo *philos;
+	t_philo	*philos;
 
-    philos = (t_philo *)arg;
-    pthread_mutex_lock(&philos->check_mutex);
-    philos->last_meal = philos->rules->start_time;
-    pthread_mutex_unlock(&philos->check_mutex);
-    action_print(philos, "thinking");
-    if (philos->id % 2 != 0)
-        ft_sleep(philos->rules->time_to_eat);
-    while(alive(philos))
-    {
-        action_eat(philos);
-        action_print(philos, "is sleeping");
-        safe_usleep(philos->rules->time_to_sleep, philos);
-        action_print(philos, "thinking");
-    }
-    return NULL;
+	philos = (t_philo *)arg;
+	pthread_mutex_lock(&philos->check_mutex);
+	philos->last_meal = philos->rules->start_time;
+	pthread_mutex_unlock(&philos->check_mutex);
+	action_print(philos, "thinking");
+	if (philos->id % 2 != 0)
+		ft_sleep(philos->rules->time_to_eat);
+	while (alive(philos))
+	{
+		action_eat(philos);
+		action_print(philos, "is sleeping");
+		safe_usleep(philos->rules->time_to_sleep, philos);
+		action_print(philos, "thinking");
+	}
+	return (NULL);
 }

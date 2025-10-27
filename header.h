@@ -6,7 +6,7 @@
 /*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 17:36:43 by jpaselt           #+#    #+#             */
-/*   Updated: 2025/10/23 17:36:45 by jpaselt          ###   ########.fr       */
+/*   Updated: 2025/10/27 16:57:50 by jpaselt          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,5 @@ void				clean_exitf(char *message, t_rules *rules);
 
 int					alive(t_philo *philos);
 void				ft_sleep(size_t sleep);
-void				print_philos(t_philo *philos);
 
 #endif

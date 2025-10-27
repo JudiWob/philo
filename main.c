@@ -1,16 +1,27 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/27 16:50:01 by jpaselt           #+#    #+#             */
+/*   Updated: 2025/10/27 16:50:03 by jpaselt          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "header.h"
 
-int     main(int argc, char const *argv[]);
-void    *philos_routine(void *arg);
-void    *monitor_routine(void *arg);
-void    action_eat(t_philo *philos);
-int     all_meals_eaten(t_philo *philos);
+int		main(int argc, char const *argv[]);
+void	*philos_routine(void *arg);
+void	*monitor_routine(void *arg);
+void	action_eat(t_philo *philos);
+int		all_meals_eaten(t_philo *philos);
 
-
-//number_of_philosophers 
-//time_to_die 
-//time_to_eat 
-//time_to_sleep
+// number_of_philosophers
+// time_to_die
+// time_to_eat
+// time_to_sleep
 //[number_of_times_each_philosopher_must_eat]
 
 int	main(int argc, char const *argv[])
@@ -34,17 +45,16 @@ int	main(int argc, char const *argv[])
 	return (cleanup(philos));
 }
 
-
-int alive(t_philo *philos)
+int	alive(t_philo *philos)
 {
-    pthread_mutex_lock(&philos->check_mutex);
-    if(philos->is_dead)
-    {
-        pthread_mutex_unlock(&philos->check_mutex);
-        return 0;
-    }
-    pthread_mutex_unlock(&philos->check_mutex);
-    return 1;
+	pthread_mutex_lock(&philos->check_mutex);
+	if (philos->is_dead)
+	{
+		pthread_mutex_unlock(&philos->check_mutex);
+		return (0);
+	}
+	pthread_mutex_unlock(&philos->check_mutex);
+	return (1);
 }
 
 void	ft_sleep(size_t sleep)
@@ -55,5 +65,3 @@ void	ft_sleep(size_t sleep)
 	while (get_time_ms() < t)
 		usleep(500);
 }
-
-

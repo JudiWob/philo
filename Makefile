@@ -3,7 +3,7 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror -g
 
 # Files
-SRCS = main.c utils.c action.c temp.c monitor.c routine.c
+SRCS = main.c utils.c action.c monitor.c routine.c
 OBJS = $(addprefix obj/, $(SRCS:.c=.o))
 DEPS = header.h
 
