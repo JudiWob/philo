@@ -6,7 +6,7 @@
 /*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 18:09:20 by jpaselt           #+#    #+#             */
-/*   Updated: 2025/10/28 20:37:47 by jpaselt          ###   ########.fr       */
+/*   Updated: 2025/10/28 21:41:13 by jpaselt          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ void	*monitor_routine(void *arg)
 			i++;
 		}
 		pthread_mutex_unlock(&philos->rules->print_mutex);
-		usleep(200);
+		usleep(100);
 	}
 	return (NULL);
 }
