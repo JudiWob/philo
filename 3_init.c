@@ -1,10 +1,21 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/10/28 18:52:58 by jpaselt           #+#    #+#             */
+/*   Updated: 2025/10/28 19:22:58 by jpaselt          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "header.h"
 
 t_rules	*init_rules(int argc, const char *argv[]);
 t_philo	*init_philos(int argc, const char *argv[]);
 void	init_forks_threads_mutex(t_rules *rules);
 int		ft_atoi(const char *nptr);
-void	clean_exitf(char *message, t_rules *rules);
 
 t_philo	*init_philos(int argc, const char *argv[])
 {
@@ -14,7 +25,7 @@ t_philo	*init_philos(int argc, const char *argv[])
 
 	i = 0;
 	if (argc < 5)
-		clean_exitf("Invalid arguments\n", NULL);
+		return (printf("Invalid arguments\n"), exit(EXIT_FAILURE), NULL);
 	rules = init_rules(argc, argv);
 	init_forks_threads_mutex(rules);
 	philos = malloc(sizeof(t_philo) * rules->num_philos);
@@ -52,8 +63,9 @@ t_rules	*init_rules(int argc, const char *argv[])
 	else
 		rules->num_must_eat = -1;
 	if (rules->num_philos <= 0 || rules->time_to_die <= 0
-		|| rules->time_to_eat <= 0 || rules->time_to_sleep <= 0)
-		clean_exitf("Invalid arguments\n", rules);
+		|| rules->time_to_eat <= 0 || rules->time_to_sleep <= 0
+		|| (argc == 6 && rules->num_must_eat < 0))
+		return (printf("Invalid arguments\n"), free(rules), exit(1), NULL);
 	rules->start_time = get_time_ms();
 	return (rules);
 }
@@ -62,11 +74,11 @@ void	init_forks_threads_mutex(t_rules *rules)
 {
 	int				i;
 
-	rules->forks = malloc(sizeof(pthread_mutex_t) * rules->num_philos); 
+	rules->forks = malloc(sizeof(pthread_mutex_t) * rules->num_philos);
 	if (!rules->forks)
 		exit(EXIT_FAILURE);
 	i = 0;
-	while(i < rules->num_philos)
+	while (i < rules->num_philos)
 	{
 		pthread_mutex_init(&(rules->forks)[i], NULL);
 		i++;
@@ -75,15 +87,6 @@ void	init_forks_threads_mutex(t_rules *rules)
 	rules->threads = malloc(sizeof(pthread_t) * rules->num_philos);
 	if (!rules->threads)
 		exit(EXIT_FAILURE);
-}
-
-
-void clean_exitf(char *message, t_rules *rules)
-{
-	printf("Error: %s", message);
-	if(rules)
-		free(rules);
-	exit(EXIT_FAILURE);
 }
 
 int	ft_atoi(const char *nptr)

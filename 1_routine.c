@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   routine.c                                          :+:      :+:    :+:   */
+/*   1_routine.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 16:58:26 by jpaselt           #+#    #+#             */
-/*   Updated: 2025/10/27 16:58:28 by jpaselt          ###   ########.fr       */
+/*   Updated: 2025/10/28 21:37:10 by jpaselt          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ void	*philos_routine(void *arg);
 void	action_eat(t_philo *philos);
 void	take_forks(t_philo *philos);
 void	action_print(t_philo *philos, const char *action);
-
+int		alive(t_philo *philos);
 
 void	*philos_routine(void *arg)
 {
@@ -26,6 +26,8 @@ void	*philos_routine(void *arg)
 	pthread_mutex_lock(&philos->check_mutex);
 	philos->last_meal = philos->rules->start_time;
 	pthread_mutex_unlock(&philos->check_mutex);
+	if (philos->rules->num_philos == 1)
+		return (printf("0 1 has taken a fork\n"), NULL);
 	action_print(philos, "thinking");
 	while (alive(philos))
 	{
@@ -36,7 +38,6 @@ void	*philos_routine(void *arg)
 	}
 	return (NULL);
 }
-
 
 void	action_eat(t_philo *philos)
 {
@@ -57,14 +58,14 @@ void	action_eat(t_philo *philos)
 	pthread_mutex_unlock(philos->left_fork);
 	pthread_mutex_unlock(philos->right_fork);
 }
-
+//31 600 200 200 10
 
 void	take_forks(t_philo *philos)
 {
-	if (philos->id % 2 != 0)
-		usleep(1000);
+	if (philos->id % 2 == 0)
+		usleep(500);
 	if (philos->id == philos->rules->num_philos)
-		usleep(1000);
+		usleep(500);
 	if (philos->id % 2 == 0)
 	{
 		pthread_mutex_lock(philos->left_fork);
@@ -84,10 +85,25 @@ void	action_print(t_philo *philos, const char *action)
 {
 	long	timestamp;
 
-	if (!alive(philos))
-		return ;
-	timestamp = (get_time_ms() - philos->rules->start_time);
 	pthread_mutex_lock(&philos->rules->print_mutex);
+	if (!alive(philos))
+	{
+		pthread_mutex_unlock(&philos->rules->print_mutex);
+		return ;
+	}
+	timestamp = (get_time_ms() - philos->rules->start_time);
 	printf("%ld %d %s\n", timestamp, philos->id + 1, action);
 	pthread_mutex_unlock(&philos->rules->print_mutex);
+}
+
+int	alive(t_philo *philos)
+{
+	pthread_mutex_lock(&philos->check_mutex);
+	if (philos->is_dead)
+	{
+		pthread_mutex_unlock(&philos->check_mutex);
+		return (0);
+	}
+	pthread_mutex_unlock(&philos->check_mutex);
+	return (1);
 }

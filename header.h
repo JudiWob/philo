@@ -6,7 +6,7 @@
 /*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 17:36:43 by jpaselt           #+#    #+#             */
-/*   Updated: 2025/10/27 16:57:50 by jpaselt          ###   ########.fr       */
+/*   Updated: 2025/10/28 21:32:57 by jpaselt          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,27 +45,35 @@ typedef struct s_philo
 }					t_philo;
 
 // main
-int					main(int argc, char const *argv[]);
-void				*philos_routine(void *arg);
-void				*monitor_routine(void *arg);
-void				action_eat(t_philo *philos);
-int					all_meals_eaten(t_philo *philos);
+int		main(int argc, char const *argv[]);
+void	*philos_routine(void *arg);
+void	*monitor_routine(void *arg);
+void	action_eat(t_philo *philos);
+int		all_meals_eaten(t_philo *philos);
 
-// utils 2
-void				safe_usleep(long duration_ms, t_philo *philos);
-long				get_time_ms(void);
-void				take_forks(t_philo *philos);
-void				action_print(t_philo *philos, const char *action);
-int					cleanup(t_philo *philos);
+//routine
+void	*philos_routine(void *arg);
+void	action_eat(t_philo *philos);
+void	take_forks(t_philo *philos);
+void	action_print(t_philo *philos, const char *action);
+int		alive(t_philo *philos);
 
-// utils 2
-t_rules				*init_rules(int argc, const char *argv[]);
-t_philo				*init_philos(int argc, const char *argv[]);
-void				init_forks_threads_mutex(t_rules *rules);
-int					ft_atoi(const char *nptr);
-void				clean_exitf(char *message, t_rules *rules);
+//monitor
+void	*monitor_routine(void *arg);
+int		check_starvation(t_philo *philos, int i);
+void	kill_all(t_philo *philos, int id);
+int		all_meals_eaten(t_philo *philos);
 
-int					alive(t_philo *philos);
-void				ft_sleep(size_t sleep);
+//init
+t_rules	*init_rules(int argc, const char *argv[]);
+t_philo	*init_philos(int argc, const char *argv[]);
+void	init_forks_threads_mutex(t_rules *rules);
+int		ft_atoi(const char *nptr);
+
+//time_cleanup
+void	ft_sleep(size_t sleep);
+void	safe_usleep(long duration_ms, t_philo *philos);
+long	get_time_ms(void);
+int		cleanup(t_philo *philos);
 
 #endif
