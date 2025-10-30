@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   utils.c                                            :+:      :+:    :+:   */
+/*   3_init.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/28 18:52:58 by jpaselt           #+#    #+#             */
-/*   Updated: 2025/10/28 19:22:58 by jpaselt          ###   ########.fr       */
+/*   Updated: 2025/10/30 16:38:51 by jpaselt          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ t_philo	*init_philos(int argc, const char *argv[])
 	int				i;
 
 	i = 0;
-	if (argc < 5)
+	if (argc < 5 || argc > 6)
 		return (printf("Invalid arguments\n"), exit(EXIT_FAILURE), NULL);
 	rules = init_rules(argc, argv);
 	init_forks_threads_mutex(rules);
@@ -49,8 +49,6 @@ t_rules	*init_rules(int argc, const char *argv[])
 {
 	t_rules	*rules;
 
-	if (argc < 5 || argc > 6)
-		exit(EXIT_FAILURE);
 	rules = malloc(sizeof(t_rules));
 	if (!rules)
 		exit(EXIT_FAILURE);

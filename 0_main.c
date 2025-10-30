@@ -6,7 +6,7 @@
 /*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 16:50:01 by jpaselt           #+#    #+#             */
-/*   Updated: 2025/10/28 19:42:54 by jpaselt          ###   ########.fr       */
+/*   Updated: 2025/10/30 16:17:52 by jpaselt          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,5 +34,6 @@ int	main(int argc, char const *argv[])
 	while (++i < philos->rules->num_philos)
 		pthread_join(philos->rules->threads[i], NULL);
 	pthread_join(monitor, NULL);
-	return (cleanup(philos));
+	cleanup(philos);
+	return (0);
 }

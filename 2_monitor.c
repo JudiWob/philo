@@ -6,7 +6,7 @@
 /*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/25 18:09:20 by jpaselt           #+#    #+#             */
-/*   Updated: 2025/10/28 21:41:13 by jpaselt          ###   ########.fr       */
+/*   Updated: 2025/10/30 17:08:08 by jpaselt          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@ void	*monitor_routine(void *arg)
 	t_philo	*philos;
 
 	philos = (t_philo *)arg;
-	ft_sleep(philos->rules->time_to_die - 20);
 	while (1)
 	{
 		pthread_mutex_lock(&philos->rules->print_mutex);
@@ -37,7 +36,7 @@ void	*monitor_routine(void *arg)
 			i++;
 		}
 		pthread_mutex_unlock(&philos->rules->print_mutex);
-		usleep(100);
+		usleep(500);
 	}
 	return (NULL);
 }

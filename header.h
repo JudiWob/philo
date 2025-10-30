@@ -6,7 +6,7 @@
 /*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/23 17:36:43 by jpaselt           #+#    #+#             */
-/*   Updated: 2025/10/28 21:32:57 by jpaselt          ###   ########.fr       */
+/*   Updated: 2025/10/30 17:10:33 by jpaselt          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,6 @@ void	init_forks_threads_mutex(t_rules *rules);
 int		ft_atoi(const char *nptr);
 
 //time_cleanup
-void	ft_sleep(size_t sleep);
 void	safe_usleep(long duration_ms, t_philo *philos);
 long	get_time_ms(void);
 int		cleanup(t_philo *philos);

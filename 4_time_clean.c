@@ -6,25 +6,15 @@
 /*   By: jpaselt <jpaselt@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/10/27 16:48:01 by jpaselt           #+#    #+#             */
-/*   Updated: 2025/10/28 19:26:26 by jpaselt          ###   ########.fr       */
+/*   Updated: 2025/10/30 17:10:27 by jpaselt          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "header.h"
 
-void	ft_sleep(size_t sleep);
 void	safe_usleep(long duration_ms, t_philo *rules);
 long	get_time_ms(void);
 int		cleanup(t_philo *philos);
-
-void	ft_sleep(size_t sleep)
-{
-	time_t	t;
-
-	t = get_time_ms() + sleep;
-	while (get_time_ms() < t)
-		usleep(500);
-}
 
 void	safe_usleep(long sleeptime_ms, t_philo *philos)
 {
